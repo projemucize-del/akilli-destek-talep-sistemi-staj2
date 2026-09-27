@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Destek taleplerini yöneten ve yapay zekâ ile sınıflandıran yerel test uygulaması">
+  <title>Akıllı Destek Talep Sistemi - Test Ortamı</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect rx='15' width='64' height='64' fill='%23112f55'/%3E%3Cpath d='M18 20h28v19H31l-8 7v-7h-5z' fill='%234bd0b4'/%3E%3Ccircle cx='26' cy='29' r='2' fill='white'/%3E%3Ccircle cx='32' cy='29' r='2' fill='white'/%3E%3Ccircle cx='38' cy='29' r='2' fill='white'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><div class="mark" aria-hidden="true">AI</div><div><p class="eyebrow">YAZILIM VE WEB UYGULAMA HİZMETLERİ</p><h1>Akıllı Destek Talep Sistemi</h1><p class="subtitle">SQLite, REST API ve metin sınıflandırma modeli</p></div></div>
+    <div class="header-actions"><span id="api-state" class="api-state waiting"><i></i>Servis kontrol ediliyor</span><span class="test-badge">TEST ORTAMI</span></div>
+  </header>
+  <nav class="rolebar" aria-label="Demo rolü"><div><strong>Görünüm:</strong> Bu seçim yalnızca prototip arayüzünü gösterir; gerçek kimlik doğrulama değildir.</div><div class="segmented"><button class="role active" data-role="user">Kullanıcı</button><button class="role" data-role="staff">Destek Personeli</button></div></nav>
+
+  <main>
+    <section class="stats" aria-label="Talep özeti">
+      <article><span>Toplam kayıt</span><strong id="stat-total">-</strong><small>Tüm test talepleri</small></article>
+      <article><span>Açık</span><strong id="stat-open">-</strong><small>İşleme alınmayı bekliyor</small></article>
+      <article><span>İşlemde</span><strong id="stat-progress">-</strong><small>Teknik inceleme sürüyor</small></article>
+      <article><span>Çözüldü</span><strong id="stat-done">-</strong><small>Sonuçlandırılan kayıt</small></article>
+    </section>
+
+    <section class="dashboard-grid">
+      <article class="panel chart-panel"><div class="section-heading"><div><p class="kicker">Dağılım</p><h2>Kategori bazında talepler</h2></div><button id="refresh" class="icon-button" aria-label="Verileri yenile">↻</button></div><div id="category-chart" class="chart"></div></article>
+      <article class="panel ai-overview"><div class="section-heading"><div><p class="kicker">Model doğrulama</p><h2>Yapay zekâ test özeti</h2></div><span class="model-chip">Naive Bayes</span></div><div class="metric-grid"><div><strong id="category-accuracy">-</strong><span>Kategori doğruluğu</span></div><div><strong id="priority-accuracy">-</strong><span>Öncelik doğruluğu</span></div></div><p id="ai-data-note">Sentetik test verileri yükleniyor.</p></article>
+    </section>
+
+    <section class="workspace">
+      <aside class="panel form-panel">
+        <div class="section-heading"><div><p class="kicker">Yeni kayıt</p><h2>Destek talebi oluştur</h2></div></div>
+        <form id="ticket-form" novalidate>
+          <label>Başlık<input id="title" maxlength="80" required placeholder="Örn. Kablosuz ağa bağlanamıyorum"></label>
+          <label>Açıklama<textarea id="description" rows="4" maxlength="500" required placeholder="Sorunu kişisel veri yazmadan açıklayın"></textarea></label>
+          <button id="ai-predict" class="ai-button" type="button"><span>✦</span> Yapay zekâ ile kategori ve öncelik öner</button>
+          <div id="ai-result" class="ai-result" hidden aria-live="polite"></div>
+          <div class="form-row"><label>Kategori<select id="category" required><option value="">Seçiniz</option><option>Ağ ve İnternet</option><option>Yazılım</option><option>Web Sayfası</option><option>Hesap ve Yetki</option><option>Donanım</option><option>Diğer</option></select></label><label>Öncelik<select id="priority" required><option>Normal</option><option>Yüksek</option><option>Düşük</option></select></label></div>
+          <p class="privacy-note">Gerçek kişi adı, parola veya kurum verisi girmeyiniz. AI sonucu yalnızca öneridir.</p><p id="form-message" class="form-message" role="alert"></p>
+          <button class="primary" type="submit">Talebi API üzerinden kaydet</button>
+        </form>
+      </aside>
+
+      <section class="panel list-panel">
+        <div class="section-heading list-heading"><div><p class="kicker">Kayıt yönetimi</p><h2>Talep listesi</h2></div><a class="secondary" href="/api/export.csv" download>CSV dışa aktar</a></div>
+        <div class="filters"><label><span>Arama</span><input id="search" type="search" placeholder="Başlık, kategori veya açıklama"></label><label><span>Durum</span><select id="status-filter"><option value="">Tüm durumlar</option><option>Açık</option><option>İşlemde</option><option>Çözüldü</option></select></label><label><span>Kategori</span><select id="category-filter"><option value="">Tüm kategoriler</option><option>Ağ ve İnternet</option><option>Yazılım</option><option>Web Sayfası</option><option>Hesap ve Yetki</option><option>Donanım</option><option>Diğer</option></select></label></div>
+        <div id="loading" class="loading" hidden><span></span> Kayıtlar yükleniyor...</div><div id="list-error" class="error-box" hidden></div>
+        <div class="table-wrap"><table><thead><tr><th>No</th><th>Talep</th><th>Kategori</th><th>Öncelik</th><th>Durum</th><th>İşlem</th></tr></thead><tbody id="ticket-body"></tbody></table></div>
+        <p id="empty-state" class="empty" hidden>Filtreye uygun kayıt bulunamadı.</p>
+        <footer class="pagination"><span id="page-summary">-</span><div><button id="prev-page" class="secondary">Önceki</button><button id="next-page" class="secondary">Sonraki</button></div></footer>
+      </section>
+    </section>
+  </main>
+  <dialog id="detail-dialog"><div class="dialog-head"><div><p class="kicker">Kayıt inceleme</p><h2>Talep ayrıntısı</h2></div><button id="close-dialog" aria-label="Kapat">×</button></div><div id="detail-content"></div></dialog>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,23 +1,24 @@
-# Akıllı Destek Talep Sistemi
+# Protez El Sensör Verilerinin İzlenmesi ve Test Kayıt Sistemi
 
-Staj 2 kapsamında hazırlanmış, gerçekten çalışan yerel bir yazılım ve web uygulaması test projesidir.
+Protez el için EMG, FSR, motor akımı, parmak konumu ve batarya değerlerini izleyen yerel web uygulaması prototipidir.
 
-## Uygulanan bileşenler
+## Özellikler
 
-- Duyarlı HTML/CSS/JavaScript kullanıcı arayüzü
-- Python standart kütüphanesiyle REST API
-- Kalıcı SQLite veritabanı ve parametreli SQL sorguları
-- Talep oluşturma, arama, filtreleme ve sayfalama
-- Personel görünümü, durum güncelleme ve işlem geçmişi
-- İstatistik paneli ve CSV dışa aktarma
-- Türkçe metin için Multinomial Naive Bayes sınıflandırıcısı
-- AI ile kategori ve öncelik önerisi, güven oranı ve değerlendirme ölçütleri
-- Birim testleri
+- Python REST API ve SQLite veritabanı
+- Test oturumu başlatma ve tamamlama
+- Örnek üretici veya manuel test girdilerini kaynak etiketi ve zaman damgasıyla kaydetme
+- Oturum bazlı EMG ve FSR değişim grafiği
+- Ortalama EMG/FSR, en yüksek kuvvet ve akım, güvenli okuma oranı
+- Pearson EMG–FSR korelasyonu ve anlaşılır ilişki etiketi
+- Kuvvet, motor akımı, batarya ve EMG eşik uyarıları
+- Arama, durum filtresi ve CSV dışa aktarma
+- Masaüstü ve mobil uyumlu arayüz
+- Mevcut SQLite dosyaları için otomatik şema geçişi
+- 19 otomatik test
 
 ## Çalıştırma
 
 ```bash
-cd staj2_destek_ai
 python3 server.py
 ```
 
@@ -29,20 +30,20 @@ Tarayıcıdan `http://127.0.0.1:8765` adresini açın.
 python3 -m unittest -v test_server.py
 ```
 
-## API uç noktaları
+## API
 
 - `GET /api/health`
 - `GET /api/stats`
-- `GET /api/tickets`
-- `GET /api/tickets/{id}`
-- `POST /api/tickets`
-- `PATCH /api/tickets/{id}/status`
-- `POST /api/ai/predict`
-- `GET /api/ai/metrics`
+- `GET /api/sessions`
+- `GET /api/sessions/{id}`
+- `POST /api/sessions`
+- `POST /api/sessions/{id}/readings`
+- `POST /api/sessions/{id}/sample`
+- `PATCH /api/sessions/{id}/complete`
 - `GET /api/export.csv`
 
-## Doğruluk ve sınırlar
+## Veri kaynağı ve sınır
 
-Uygulama ve yapay zekâ modülü yerel test ortamında gerçekten çalıştırılmak üzere uygulanmıştır. AI modeli yalnızca kaynak kodda bulunan küçük, sentetik ve anonim Türkçe örnek veri kümesiyle eğitilir. Gösterilen doğruluk oranları aynı sentetik değerlendirme kümesine aittir; üniversitenin gerçek hizmet kalitesini veya gerçek kullanıcı verileri üzerindeki başarıyı kanıtlamaz. AI önerileri otomatik karar değildir ve personel onayı gerektirir.
+Mevcut sürüm gerçek protez el donanımına bağlı değildir. Arayüz, veri akışı, kayıt yapısı ve uyarılar yerel olarak üretilen örnek sensör verileriyle doğrulanır. Gerçek sensör bağlantısı yapıldığında örnek veri üreticisi yerine mikrodenetleyiciden gelen seri veya ağ verisi kullanılabilir.
 
-Uygulama gerçek üniversite sistemine bağlı değildir; üretim kimlik doğrulaması, kurum kullanıcıları ve kişisel veri içermez.
+Manuel girişler de gerçek sensör ölçümü sayılmaz ve her kayıtta `Manuel Test Girdisi` olarak işaretlenir. Arayüzdeki “güvenli okuma” ifadesi yalnızca prototip yazılım eşiklerini belirtir; klinik güvenlik veya cihaz uygunluğu kanıtı değildir.
